@@ -24,18 +24,16 @@ class Registry(Generic[T]):
         elif self.default is not None:
             return self.default
         else:
-            return ValueError(f"{name} doesn't in registry")
+            raise ValueError(f"{name} doesn't in registry")
 
 
 if __name__ == "__main__":
-    mapping_registry = Registry[Any]("Any")
-    mapping_registry.register("tuple")(tuple)
-    mapping_registry.register("ordered_dict")(OrderedDict)
-    print("Now checking registry working:\n")
-    try:
-        assert mapping_registry.dispatch("tuple") == tuple
-        assert mapping_registry.dispatch("aboba") == "Any"
-        assert mapping_registry.dispatch("ordered_dict") == OrderedDict
-
-    except:
-        print("Something going wrong")
+    mapping_registry = Registry[Any]("default_value")
+    s = input("Enter 1 if you want to registry dict\nEnter 2 if you want to registry tuple")
+    if s == "1":
+        mapping_registry.register("dict")(dict)
+    if s == "2":
+        mapping_registry.register("tuple")(tuple)
+    print("Now something in registry :)")
+    print(mapping_registry.dispatch("dict"))
+    print(mapping_registry.dispatch("tuple"))
