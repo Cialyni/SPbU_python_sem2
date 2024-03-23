@@ -1,20 +1,21 @@
-from typing import Any, OrderedDict, Mapping
+from abc import ABC
+from typing import Mapping
 
 import pytest
-from src.Homeworks.Registry import Registry
 
+from src.Homeworks.registry import Registry
 
 MAPPING_REGISTRY = Registry[Mapping](default=dict)
 MAPPING_REGISTRY_WITHOUT_DEFAULT = Registry[Mapping]()
 
 
 @MAPPING_REGISTRY.register(name="avl_tree")
-class AVLTree(Mapping):
+class AVLTree(Mapping, ABC):
     pass
 
 
 @MAPPING_REGISTRY.register(name="cartesian_tree")
-class CartesianTree(Mapping):
+class CartesianTree(Mapping, ABC):
     pass
 
 
