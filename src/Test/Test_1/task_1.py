@@ -48,8 +48,7 @@ class Magazine:
             self.product_list = sorted(self.product_list, key=lambda x: x.rating)
         if sort_type == "count":
             self.product_list = sorted(self.product_list, key=lambda x: x.count)
-        for product in self.product_list:
-            print(product.name, product)
+        return self.product_list
 
     def add_in_basket(self, name, price, rating, count):
         product = Product(name, price, rating, count)
@@ -80,9 +79,9 @@ if __name__ == "__main__":
     magaz.add_new_product("onion", 913, 43, 54)
     magaz.add_new_product("cucumber", 1000, 40, 5111)
     magaz.add_new_product("cabbage", 76, 8, 23)
-    magaz.add_in_basket("cucumber", 1000, 40, 5111)
-    magaz.add_in_basket("carrot", 100, 0.8, 5)
-    magaz.show_basket()
     print(magaz.sorting("rating"))
-    print(magaz.buy_active_basket())
+"""    magaz.add_in_basket("cucumber", 1000, 40, 5111)
+    magaz.add_in_basket("carrot", 100, 0.8, 5)
+    magaz.show_basket()"""
 
+"""    print(magaz.buy_active_basket())"""
