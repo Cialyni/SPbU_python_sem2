@@ -14,10 +14,10 @@ class Basket:
     def __init__(self):
         self.products: [Product] = []
 
-    def add_product(self, product: Product) -> None:
+    def add_product(self, product: Product):
         self.products.append(product)
 
-    def clear(self) -> None:
+    def clear(self):
         self.products = []
 
 
@@ -26,7 +26,7 @@ class Magazine:
         self.product_list: [Product] = []
         self.baskets = [Basket()]
 
-    def add_new_product(self, name, price, rating, count) -> None:
+    def add_new_product(self, name, price, rating, count):
         new_product = Product(name, price, rating, count)
         self.product_list.append(new_product)
 
@@ -36,7 +36,7 @@ class Magazine:
                 return elem
         return None
 
-    def show_basket(self) -> None:
+    def show_basket(self):
         for elem in self.baskets[-1].products:
             print(elem.name, elem.price, elem.rating, elem.count)
 
@@ -51,14 +51,13 @@ class Magazine:
             self.product_list = sorted(self.product_list, key=lambda x: x.count)
         return self.product_list
 
-    def add_in_basket(self, name, price, rating, count) -> None:
-        product = Product(name, price, rating, count)
+    def add_in_basket(self, product: Product):
         self.baskets[-1].add_product(product)
 
-    def create_new_shopping_basket(self) -> None:
+    def create_new_shopping_basket(self):
         self.baskets.append(Basket())
 
-    def delete_active_basket(self) -> None:
+    def delete_active_basket(self):
         self.baskets.pop()
 
     def buy_active_basket(self) -> int:
@@ -80,9 +79,7 @@ if __name__ == "__main__":
     magaz.add_new_product("onion", 913, 43, 54)
     magaz.add_new_product("cucumber", 1000, 40, 5111)
     magaz.add_new_product("cabbage", 76, 8, 23)
-    print(magaz.sorting("rating"))
-"""    magaz.add_in_basket("cucumber", 1000, 40, 5111)
-    magaz.add_in_basket("carrot", 100, 0.8, 5)
-    magaz.show_basket()"""
 
-"""    print(magaz.buy_active_basket())"""
+    magaz.add_in_basket(Product("cucumber", 1000, 40, 5111))
+    magaz.add_in_basket(Product("carrot", 100, 0.8, 5))
+    print(magaz.baskets[-1])
