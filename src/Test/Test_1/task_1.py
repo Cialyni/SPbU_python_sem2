@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -13,10 +14,10 @@ class Basket:
     def __init__(self):
         self.products: [Product] = []
 
-    def add_product(self, product: Product):
+    def add_product(self, product: Product) -> None:
         self.products.append(product)
 
-    def clear(self):
+    def clear(self) -> None:
         self.products = []
 
 
@@ -25,7 +26,7 @@ class Magazine:
         self.product_list: [Product] = []
         self.baskets = [Basket()]
 
-    def add_new_product(self, name, price, rating, count):
+    def add_new_product(self, name, price, rating, count) -> None:
         new_product = Product(name, price, rating, count)
         self.product_list.append(new_product)
 
@@ -35,11 +36,11 @@ class Magazine:
                 return elem
         return None
 
-    def show_basket(self):
+    def show_basket(self) -> None:
         for elem in self.baskets[-1].products:
             print(elem.name, elem.price, elem.rating, elem.count)
 
-    def sorting(self, sort_type: str = "price"):
+    def sorting(self, sort_type: str = "price") -> List[Product]:
         if sort_type == "price":
             self.product_list = sorted(self.product_list, key=lambda x: x.price)
         if sort_type == "name":
@@ -50,14 +51,14 @@ class Magazine:
             self.product_list = sorted(self.product_list, key=lambda x: x.count)
         return self.product_list
 
-    def add_in_basket(self, name, price, rating, count):
+    def add_in_basket(self, name, price, rating, count) -> None:
         product = Product(name, price, rating, count)
         self.baskets[-1].add_product(product)
 
-    def create_new_shopping_basket(self):
+    def create_new_shopping_basket(self) -> None:
         self.baskets.append(Basket())
 
-    def delete_active_basket(self):
+    def delete_active_basket(self) -> None:
         self.baskets.pop()
 
     def buy_active_basket(self) -> int:
