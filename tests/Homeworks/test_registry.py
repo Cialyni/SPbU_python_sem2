@@ -1,12 +1,14 @@
 from abc import ABC
-from typing import Mapping
+from typing import Mapping, Type, TypeVar
 
 import pytest
 
 from src.Homeworks.registry import Registry
 
-MAPPING_REGISTRY = Registry[Mapping](default=dict)
+MAPPING_REGISTRY = Registry[Mapping](default=Mapping)
 MAPPING_REGISTRY_WITHOUT_DEFAULT = Registry[Mapping]()
+
+T = TypeVar("T")
 
 
 @MAPPING_REGISTRY.register(name="avl_tree")
@@ -19,18 +21,49 @@ class CartesianTree(Mapping, ABC):
     pass
 
 
-def test_registry():
-    test_1 = MAPPING_REGISTRY.dispatch("avl_tree")
-    assert issubclass(test_1, AVLTree)
-    test_2 = MAPPING_REGISTRY.dispatch("unknown_tree")
-    assert issubclass(test_2, dict)
+@MAPPING_REGISTRY_WITHOUT_DEFAULT.register(name="some_tree")
+class SomeTree:
+    pass
 
 
-def test_exception_in_registry():
-    with pytest.raises(ValueError):
-        MAPPING_REGISTRY.register("avl_tree")(AVLTree)
+@MAPPING_REGISTRY_WITHOUT_DEFAULT.register(name="binary_tree")
+class BinaryTree:
+    pass
 
 
-def test_exception_in_dispatch():
-    with pytest.raises(ValueError):
-        MAPPING_REGISTRY_WITHOUT_DEFAULT.dispatch(name="aboba")
+@pytest.mark.parametrize(
+    "class_name, collection",
+    (
+        ("avl_tree", AVLTree),
+        ("cartesian_tree", CartesianTree),
+    ),
+)
+class TestRegistryWithDefault:
+    def test_registry(self, class_name: str, collection: Type[T]) -> None:
+        test_1 = MAPPING_REGISTRY.dispatch(class_name)
+        assert issubclass(test_1, collection) and issubclass(MAPPING_REGISTRY.dispatch("something_random"), Mapping)
+
+    def test_exception_in_registry_catcher(self, class_name: str, collection: Type[T]) -> None:
+        with pytest.raises(ValueError):
+            MAPPING_REGISTRY.register(class_name)(collection)
+
+
+@pytest.mark.parametrize(
+    "class_name, collection",
+    (
+        ("binary_tree", BinaryTree),
+        ("some_tree", SomeTree),
+    ),
+)
+class TestRegistryWithoutDefault:
+    def test_registry(self, class_name: str, collection: Type[T]) -> None:
+        test_1 = MAPPING_REGISTRY_WITHOUT_DEFAULT.dispatch(class_name)
+        assert issubclass(test_1, collection)
+
+    def test_exception_in_registry_catcher(self, class_name: str, collection: Type[T]) -> None:
+        with pytest.raises(ValueError):
+            MAPPING_REGISTRY_WITHOUT_DEFAULT.register(class_name)(collection)
+
+    def test_exception_in_dispatch(self, class_name: str, collection: Type[T]) -> None:
+        with pytest.raises(ValueError):
+            MAPPING_REGISTRY_WITHOUT_DEFAULT.dispatch("something")

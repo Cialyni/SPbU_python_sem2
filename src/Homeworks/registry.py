@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Generic, Optional, Type, TypeVar
+from typing import Callable, Counter, Dict, Generic, Mapping, Optional, OrderedDict, Type, TypeVar
 
 T = TypeVar("T")
 
@@ -8,7 +8,7 @@ class Registry(Generic[T]):
         self.store: Dict[str, Type[T]] = {}
         self.default = default
 
-    def register(self, name: str) -> Callable:
+    def register(self, name: str) -> Callable[[Type[T]], Type[T]]:
         if name in self.store:
             raise ValueError(f"{name} already in registry")
 
@@ -28,12 +28,12 @@ class Registry(Generic[T]):
 
 
 if __name__ == "__main__":
-    mapping_registry = Registry[dict](dict)
+    mapping_registry = Registry[Mapping](Mapping)
     s = input("Enter 1 if you want to registry dict\nEnter 2 if you want to registry tuple")
     if s == "1":
-        mapping_registry.register("dict")(dict)
+        mapping_registry.register("OrderedDict")(OrderedDict)
     if s == "2":
-        mapping_registry.register("tuple")(tuple)
+        mapping_registry.register("Counter")(Counter)
     print("Now something in registry :)")
-    print(mapping_registry.dispatch("dict"))
-    print(mapping_registry.dispatch("tuple"))
+    print(mapping_registry.dispatch("OrderedDict"))
+    print(mapping_registry.dispatch("Counter"))
