@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Mapping, Type, TypeVar
+from typing import Mapping
 
 import pytest
 
@@ -7,8 +7,6 @@ from src.Homeworks.registry import Registry
 
 MAPPING_REGISTRY = Registry[Mapping](default=Mapping)
 MAPPING_REGISTRY_WITHOUT_DEFAULT = Registry[Mapping]()
-
-T = TypeVar("T")
 
 
 @MAPPING_REGISTRY.register(name="avl_tree")
@@ -39,11 +37,11 @@ class BinaryTree:
     ),
 )
 class TestRegistryWithDefault:
-    def test_registry(self, class_name: str, collection: Type[T]) -> None:
+    def test_registry(self, class_name: str, collection) -> None:
         test_1 = MAPPING_REGISTRY.dispatch(class_name)
         assert issubclass(test_1, collection) and issubclass(MAPPING_REGISTRY.dispatch("something_random"), Mapping)
 
-    def test_exception_in_registry_catcher(self, class_name: str, collection: Type[T]) -> None:
+    def test_exception_in_registry_catcher(self, class_name: str, collection) -> None:
         with pytest.raises(ValueError):
             MAPPING_REGISTRY.register(class_name)(collection)
 
@@ -56,14 +54,14 @@ class TestRegistryWithDefault:
     ),
 )
 class TestRegistryWithoutDefault:
-    def test_registry(self, class_name: str, collection: Type[T]) -> None:
+    def test_registry(self, class_name: str, collection) -> None:
         test_1 = MAPPING_REGISTRY_WITHOUT_DEFAULT.dispatch(class_name)
         assert issubclass(test_1, collection)
 
-    def test_exception_in_registry_catcher(self, class_name: str, collection: Type[T]) -> None:
+    def test_exception_in_registry_catcher(self, class_name: str, collection) -> None:
         with pytest.raises(ValueError):
             MAPPING_REGISTRY_WITHOUT_DEFAULT.register(class_name)(collection)
 
-    def test_exception_in_dispatch(self, class_name: str, collection: Type[T]) -> None:
+    def test_exception_in_dispatch(self, class_name: str, collection) -> None:
         with pytest.raises(ValueError):
             MAPPING_REGISTRY_WITHOUT_DEFAULT.dispatch("something")

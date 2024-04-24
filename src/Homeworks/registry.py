@@ -9,10 +9,9 @@ class Registry(Generic[T]):
         self.default = default
 
     def register(self, name: str) -> Callable[[Type[T]], Type[T]]:
-        if name in self.store:
-            raise ValueError(f"{name} already in registry")
-
         def deco(cls: Type[T]) -> Type[T]:
+            if name in self.store:
+                raise ValueError(f"{name} already in registry")
             self.store[name] = cls
             return cls
 
