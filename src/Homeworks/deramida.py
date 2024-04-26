@@ -209,24 +209,3 @@ def split(d: Deramida, key: K) -> (Deramida, Deramida):  # Left deramida keys < 
         return None, None
     rt1, rt2 = _split(d.root)
     return Deramida(rt1), Deramida(rt2)
-
-
-if __name__ == "__main__":
-    deramida = Deramida()
-    deramida[6] = "aboba"
-    deramida[5] = "hihihaha"
-    deramida[100] = 100
-    deramida[52] = 62
-    deramida[14] = 45
-    deramida[100] = 74
-    deramida[86] = 2
-    deramida[5] = 10340
-    deramida[74] = 1
-    deramida[23] = 53
-    deramida[211] = 100
-    deramida[3] = 0
-    print(len(deramida))
-    print(deramida)
-
-    for i in deramida:
-        print(i)
