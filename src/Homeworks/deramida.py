@@ -1,14 +1,14 @@
-from abc import ABC
-from copy import deepcopy
-from dataclasses import dataclass
 from random import randint
-from typing import TypeVar, Generic, MutableMapping, List
-import pprint
+from typing import Any, Generic, List, MutableMapping, TypeVar
 
 K = TypeVar("K")
+V = TypeVar("V")
 
 
 class Printer:
+    def __init__(self):
+        self.root = None
+
     def __str__(self):
         string = [""]
 
@@ -27,7 +27,10 @@ class Printer:
     def __repr__(self):
         def _get_nodes(curr_root):
             if curr_root.left is None and curr_root.right is None:
-                return f"Node(priority={curr_root.priority}, key={curr_root.key}, value={curr_root.value}, left=None, right=None)"
+                return (
+                    f"Node(priority={curr_root.priority}, key={curr_root.key}, value={curr_root.value}, left=None, "
+                    f"right=None)"
+                )
             curr_repr = f"Node(priority={curr_root.priority}, key={curr_root.key}, value={curr_root.value}, "
             curr_repr += f"left={_get_nodes(curr_root.left)}, " if curr_root.left is not None else "left=None, "
             curr_repr += f"right={_get_nodes(curr_root.right)})" if curr_root.right is not None else "right=None)"
@@ -37,9 +40,13 @@ class Printer:
 
 
 class NodeComparator:
+    def __init__(self):
+        self.key = None
+        self.priority = None
+
     def __lt__(self, other):
-        if self == None:
-            return other != None
+        if self is None:
+            return other is not None
         if other is None:
             return False
 
@@ -64,8 +71,8 @@ class NodeComparator:
 class Node(NodeComparator):
     def __init__(self, key=None, value=None):
         self.priority: int = randint(0, int(1e9))
-        self.key = key
-        self.value = value
+        self.key: K = key
+        self.value: V = value
         self.left = None
         self.right = None
 
@@ -73,24 +80,24 @@ class Node(NodeComparator):
         return f"priority={self.priority}, key={self.key}, value={self.value}"
 
 
-class Deramida(MutableMapping, Printer):
+class Deramida(MutableMapping, Printer, Generic[K, V]):
     def __init__(self, node: Node = None):
-        self.root = node
+        self.root: Node = node
         self.len = 1 if node else 0
 
-    def __getitem__(self, key):  # fix
+    def __getitem__(self, key: K) -> V:
         needed = self.get_node(key)
         if needed is None or needed.key != key:
             raise KeyError
         return needed.value
 
-    def __contains__(self, key):
+    def __contains__(self, key: K):
         try:
             return True if self[key] is not None else False
         except KeyError:
             return False
 
-    def get_node(self, key):
+    def get_node(self, key: K) -> Node | None:
         curr_node = self.root
         while curr_node is not None:
             if curr_node.key == key:
@@ -101,26 +108,27 @@ class Deramida(MutableMapping, Printer):
                 curr_node = curr_node.right
         return None
 
-    def traverse(self, order='pre_order') -> List[Node]:
+    def traverse(self, order: str = "pre_order") -> List[Node]:
         nodes = []
 
-        def pre_order_traverse(node):
+        def pre_order_traverse(node) -> None:
             if node is not None:
                 nodes.append(node)
                 pre_order_traverse(node.left)
                 pre_order_traverse(node.right)
 
-        def post_order_traverse(node):
+        def post_order_traverse(node) -> None:
             if node is not None:
                 post_order_traverse(node.left)
                 post_order_traverse(node.right)
                 nodes.append(node)
 
-        def in_order_traverse(node):
+        def in_order_traverse(node) -> None:
             if node is not None:
                 in_order_traverse(node.left)
                 nodes.append(node)
                 in_order_traverse(node.right)
+
         if order == "pre_order":
             pre_order_traverse(self.root)
         if order == "post_order":
@@ -129,7 +137,11 @@ class Deramida(MutableMapping, Printer):
             in_order_traverse(self.root)
         return nodes
 
-    def __setitem__(self, key, value):
+    def __eq__(self, other):
+        nodes1, nodes2 = self.traverse(), other.traverse()
+        return nodes1 == nodes2
+
+    def __setitem__(self, key: K, value: V) -> None:
         if key in self:
             del self[key]
 
@@ -140,7 +152,7 @@ class Deramida(MutableMapping, Printer):
         self.root = merge(d1, d2).root
         self.len += 1
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: K) -> None:
         deleting = self.get_node(key)
         if deleting is None:
             raise KeyError(f"There no {key} in Deramida")
@@ -149,16 +161,16 @@ class Deramida(MutableMapping, Printer):
         self.root = merge(d1, d2).root
         self.len -= 1
 
-    def __iter__(self):
+    def __iter__(self) -> Any:
         nodes = self.traverse()
         for node in nodes:
             yield node
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.len
 
 
-def merge(d1: Deramida, d2: Deramida) -> Deramida:
+def merge(d1: Deramida, d2: Deramida) -> Deramida:  # all keys in d1 need to be smaller than all key in d2
     def _merge(rt1: Node, rt2: Node) -> Node:
         if rt1 is None:
             return rt2
@@ -191,7 +203,7 @@ def split(d: Deramida, key: K) -> (Deramida, Deramida):  # Left deramida keys < 
             d1_rt, d2_rt = _split(rt.left)
             rt.left = d2_rt
             return d1_rt, rt
-        return None, None
+        return rt.left, rt.right
 
     if d is None:
         return None, None
