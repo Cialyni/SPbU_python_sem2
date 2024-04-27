@@ -3,7 +3,7 @@ import random
 
 import pytest
 
-from src.Homeworks.deramida import Deramida, Node, merge, split
+from src.Homeworks.deramida import Deramida, Node, split, merge
 
 
 class TestDeramida:
