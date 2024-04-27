@@ -55,7 +55,9 @@ class NodeComparator(Generic[K]):
     def __gt__(self, other: "Node") -> bool:
         return not (self < other)
 
-    def __eq__(self, other: "Node") -> bool:
+    def __eq__(self, other: "Node") -> bool:    # type: ignore[override]
+        if not isinstance(other, NodeComparator):
+            return NotImplemented
         if self is None and other is None:
             return True
         if self is None or other is None:
@@ -86,7 +88,7 @@ class Deramida(MutableMapping, PrinterMixin, Generic[K, V]):
             raise KeyError
         return needed.value
 
-    def __contains__(self, key: K) -> bool:
+    def __contains__(self, key: K) -> bool: # type: ignore[override]
         try:
             return True if self[key] is not None else False
         except KeyError:
