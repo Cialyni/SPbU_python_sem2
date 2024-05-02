@@ -1,6 +1,6 @@
 import pytest
 
-from src.Tests.test2.bashorg import *
+from src.Tests.test2.bashorg import get_best_quote, get_last_quote, get_random_quote
 
 
 @pytest.mark.parametrize("quote_num", (10, 5, 11))
