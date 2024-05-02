@@ -11,12 +11,12 @@ PAGES = 3487
 def init() -> None:
     req = requests.get("https://башорг.рф")
     s = BeautifulSoup(req.text, "html.parser")
-    PAGES = s.input["value"]
+    PAGES = int(s.input["value"])
 
 
-def get_best_quote(quote_nums=10) -> List[str]:
+def get_best_quote(quote_nums: int = 10) -> List[str]:
     url = "https://башорг.рф/byrating/"
-    quote_lst = []
+    quote_lst: List[str] = []
     pages_num = quote_nums // QUOTES_ON_PAGE + 1
     for page_num in range(1, pages_num + 1):
         page_url = url + str(page_num)
@@ -33,9 +33,9 @@ def get_best_quote(quote_nums=10) -> List[str]:
     return quote_lst
 
 
-def get_last_quote(quote_nums=10) -> List[str]:
+def get_last_quote(quote_nums: int = 10) -> List[str]:
     url = "https://башорг.рф/index/"
-    quote_lst = []
+    quote_lst: List[str] = []
     pages_num = quote_nums // QUOTES_ON_PAGE + 1
     for page_num in range(PAGES, PAGES - pages_num, -1):
         page_url = url + str(page_num)
@@ -53,9 +53,9 @@ def get_last_quote(quote_nums=10) -> List[str]:
     return quote_lst
 
 
-def get_random_quote(quote_nums=10)-> List[str]:
+def get_random_quote(quote_nums: int = 10) -> List[str]:
     url = "https://башорг.рф/random?"
-    quote_lst = []
+    quote_lst: List[str] = []
     pages_num = quote_nums // QUOTES_ON_PAGE + 1
     for page_num in range(1, pages_num + 1):
         page_url = url + str(page_num)
@@ -71,5 +71,3 @@ def get_random_quote(quote_nums=10)-> List[str]:
             quote_lst.append(quote)
 
     return quote_lst
-
-

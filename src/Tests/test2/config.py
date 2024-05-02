@@ -1,7 +1,7 @@
 screen_width, screen_height = 1024, 768
 textblock_size = 105, 10  # width, height
 textblock_x = 100
-textblock_y = 60, 240 # first place and delta
+textblock_y = 60, 240  # first place and delta
 entry_n_size = 5, 2  # width, height
 entry_n_x = 650
 entry_n_y = 10, 240

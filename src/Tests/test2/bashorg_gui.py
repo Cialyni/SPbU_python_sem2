@@ -2,7 +2,7 @@ import asyncio
 import tkinter.scrolledtext as scrolled_text
 from tkinter import *
 
-from bashorg import *
+from bashorg import get_best_quote, get_random_quote, get_last_quote
 from config import *
 
 
