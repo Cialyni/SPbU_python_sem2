@@ -11,7 +11,6 @@ def test_get_best_quote(quote_num) -> None:
         assert isinstance(quote, str)
 
 
-
 @pytest.mark.parametrize("quote_num", (10, 5, 111))
 def test_get_random_quote(quote_num) -> None:
     quote_lst = get_random_quote(quote_num)
