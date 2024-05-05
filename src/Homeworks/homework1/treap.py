@@ -1,26 +1,25 @@
 from random import randint
-from typing import Any, Generic, Iterable, List, MutableMapping, Optional, Tuple, TypeVar, Union
+from typing import Any, Generic, List, MutableMapping, Optional, Tuple, TypeVar, Union
 
 K = TypeVar("K")
 V = TypeVar("V")
 
 
 class PrinterMixin:
-    def __init__(self) -> None:
-        self.root: Optional[Node] = None
+    root: "Optional[Node]"  # to avoid mypy error: [attr-defined]
 
     def __str__(self) -> str:
-        string = [""]
-
-        def _get_lines(node: Optional[Node], level: int = 0) -> None:
+        def _get_lines(node: Optional[Node], string: str, level: int = 0) -> str:
             if node is not None:
-                _get_lines(node.left, level + 1)
+                string = _get_lines(node.left, string, level + 1)
                 indent_by_depth = " " * 4 * level
-                string[0] += f"Depth: {level} {indent_by_depth}|---> ({node.priority}, {node.key})\n"
-                _get_lines(node.right, level + 1)
+                string += f"Depth: {level} {indent_by_depth}|---> ({node.priority}, {node.key})\n"
+                string += _get_lines(node.right, string, level + 1)
+                return string
+            else:
+                return ""
 
-        _get_lines(self.root)
-        return string[0]
+        return _get_lines(self.root, "")
 
     def __repr__(self) -> str:
         def _get_nodes(curr_root: Union[Node, Any]) -> str:
@@ -34,38 +33,7 @@ class PrinterMixin:
         return _get_nodes(self.root)
 
 
-class NodeComparator(Generic[K]):
-    def __init__(self) -> None:
-        self.key: Optional[K] = None
-        self.priority: int
-
-    def __lt__(self, other: "Node") -> bool:
-        if self is None:
-            return other is not None
-        if other is None:
-            return False
-
-        if self.priority > other.priority:
-            return False
-        elif self.priority < other.priority:
-            return True
-        else:
-            return self.key < other.key
-
-    def __gt__(self, other: "Node") -> bool:
-        return not (self < other)
-
-    def __eq__(self, other: "Node") -> bool:  # type: ignore[override]
-        if not isinstance(other, NodeComparator):
-            return NotImplemented
-        if self is None and other is None:
-            return True
-        if self is None or other is None:
-            return False
-        return self.priority == other.priority and self.key == other.key
-
-
-class Node(NodeComparator, Generic[K, V]):
+class Node(Generic[K, V]):
     def __init__(self, key: K, value: V) -> None:
         self.priority: int = randint(0, int(1e9))
         self.key: K = key
@@ -76,8 +44,19 @@ class Node(NodeComparator, Generic[K, V]):
     def __str__(self) -> str:
         return f"priority={self.priority}, key={self.key}, value={self.value}"
 
+    def __lt__(self, other: "Node") -> bool:
+        if self.priority > other.priority:
+            return False
+        elif self.priority < other.priority:
+            return True
+        else:
+            return self.key < other.key
 
-class Deramida(MutableMapping, PrinterMixin, Generic[K, V]):
+    def __eq__(self, other: "Node") -> bool:  # type: ignore[override]
+        return self.priority == other.priority and self.key == other.key
+
+
+class Treap(MutableMapping, PrinterMixin, Generic[K, V]):
     def __init__(self, node: Optional[Node] = None) -> None:
         self.root: Optional[Node] = node
         self.len = 1 if node else 0
@@ -89,10 +68,7 @@ class Deramida(MutableMapping, PrinterMixin, Generic[K, V]):
         return needed.value
 
     def __contains__(self, key: K) -> bool:  # type: ignore[override]
-        try:
-            return True if self[key] is not None else False
-        except KeyError:
-            return False
+        return self.get_node(key) is not None
 
     def get_node(self, key: K) -> Optional[Node]:
         curr_node = self.root
@@ -138,20 +114,19 @@ class Deramida(MutableMapping, PrinterMixin, Generic[K, V]):
         if key in self:
             del self[key]
 
-        d1, d2 = split(self, key)
+        rt1, rt2 = Treap.split(key, self.root)
         new_node: Node[K, V] = Node(key, value)
-        new_d: Deramida[K, V] = Deramida(new_node)
-        d2 = merge(new_d, d2)
-        self.root = merge(d1, d2).root
+        rt2 = Treap.merge(new_node, rt2)
+        self.root = Treap.merge(rt1, rt2)
         self.len += 1
 
     def __delitem__(self, key: K) -> None:
         deleting = self.get_node(key)
         if deleting is None:
-            raise KeyError(f"There no {key} in Deramida")
-        d1, d2 = split(self, key)
+            raise KeyError(f"There is no {key} in Treap")
+        rt1, rt2 = Treap.split(key, self.root)
         del deleting
-        self.root = merge(d1, d2).root
+        self.root = Treap.merge(rt1, rt2)
         self.len -= 1
 
     def __iter__(self) -> Any:
@@ -162,47 +137,29 @@ class Deramida(MutableMapping, PrinterMixin, Generic[K, V]):
     def __len__(self) -> int:
         return self.len
 
-
-def merge(
-    d1: Optional[Deramida], d2: Optional[Deramida]
-) -> Deramida:  # all keys in d1 need to be smaller than all key in d2
-    def _merge(rt1: Optional[Node], rt2: Optional[Node]) -> Optional[Node]:
-        if rt1 is None:
-            return rt2
-        if rt2 is None:
-            return rt1
-        if rt1.priority > rt2.priority:
-            rt1.right = _merge(rt1.right, rt2)
-            return rt1
+    @staticmethod
+    def merge(node1: Optional[Node], node2: Optional[Node]) -> Optional[Node]:
+        if node1 is None:
+            return node2
+        if node2 is None:
+            return node1
+        if node1.priority > node2.priority:
+            node1.right = Treap.merge(node1.right, node2)
+            return node1
         else:
-            rt2.left = _merge(rt1, rt2.left)
-            return rt2
+            node2.left = Treap.merge(node1, node2.left)
+            return node2
 
-    if d1 is None:
-        return d2 if d2 is not None else Deramida()
-    if d2 is None:
-        return d1 if d1 is not None else Deramida()
-    new_root = _merge(d1.root, d2.root)
-    return Deramida(new_root)
-
-
-def split(
-    d: Optional[Deramida], key: K
-) -> Tuple[Optional[Deramida], Optional[Deramida]]:  # Left deramida keys < key  |  Right deramida keys > key
-    def _split(rt: Optional[Node]) -> Tuple[Optional[Node], Optional[Node]]:
+    @staticmethod
+    def split(key: Any, rt: Optional[Node]) -> Tuple[Optional[Node], Optional[Node]]:
         if rt is None:
             return None, None
         if rt.key < key:
-            d1_rt, d2_rt = _split(rt.right)
+            d1_rt, d2_rt = Treap.split(key, rt.right)
             rt.right = d1_rt
             return rt, d2_rt
         elif rt.key > key:
-            d1_rt, d2_rt = _split(rt.left)
+            d1_rt, d2_rt = Treap.split(key, rt.left)
             rt.left = d2_rt
             return d1_rt, rt
         return rt.left, rt.right
-
-    if d is None:
-        return None, None
-    rt1, rt2 = _split(d.root)
-    return Deramida(rt1), Deramida(rt2)

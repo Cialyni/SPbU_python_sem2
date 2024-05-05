@@ -3,22 +3,22 @@ import random
 
 import pytest
 
-from src.Homeworks.deramida import Deramida, Node, merge, split
+from src.Homeworks.homework1.treap import Node, Treap
 
 
-class TestDeramida:
+class TestTreap:
     @staticmethod
-    def build_random_tree(size: int = random.randint(0, 10000), a=-int(1e6), b=int(1e6)) -> Deramida:
-        new_deramida = Deramida()
+    def build_random_tree(size: int = random.randint(0, 10000), a=-int(1e6), b=int(1e6)) -> Treap:
+        new_Treap = Treap()
         for i in range(size):
             key = random.randint(a, b)
             value = random.randint(a, b)
-            new_deramida[key] = value
+            new_Treap[key] = value
 
-        return new_deramida
+        return new_Treap
 
     @staticmethod
-    def check_tree_invariant(tree: Deramida) -> bool:
+    def check_tree_invariant(tree: Treap) -> bool:
         def _recursion_check(curr_root: Node) -> bool:
             left_res, right_res = True, True
             if curr_root is None or curr_root.left is None and curr_root.right is None:
@@ -38,7 +38,8 @@ class TestDeramida:
     def test_merge(self):
         for i in range(5):
             d1, d2 = self.build_random_tree(b=0), self.build_random_tree(a=0)
-            d3 = merge(copy.deepcopy(d1), copy.deepcopy(d2))
+            d3 = Treap()
+            d3.root = Treap.merge(copy.deepcopy(d1).root, copy.deepcopy(d2).root)
             assert self.check_tree_invariant(d3)
             existence_flag = True
             nodes_d1, nodes_d2 = d1.traverse(), d2.traverse()
@@ -54,7 +55,8 @@ class TestDeramida:
         for i in range(5):
             d = self.build_random_tree()
             split_key = random.randint(-int(1e6), int(1e6))
-            d1, d2 = split(copy.deepcopy(d), split_key)
+            rt1, rt2 = Treap.split(split_key, copy.deepcopy(d).root)
+            d1, d2 = Treap(rt1), Treap(rt2)
             assert self.check_tree_invariant(d1) and self.check_tree_invariant(d2)
             keys_invariant_flag = True
             nodes_d1, nodes_d2 = d1.traverse(), d2.traverse()
@@ -79,7 +81,7 @@ class TestDeramida:
         ),
     )
     def test_getitem_and_contains(self, keys, values):
-        d = Deramida()
+        d = Treap()
         for i, key in enumerate(keys):
             d[key] = values[i]
             assert d[key] == values[i]
