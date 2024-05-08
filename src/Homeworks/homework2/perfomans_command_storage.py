@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Any, List, MutableSequence, Optional
 
 
@@ -14,11 +15,11 @@ class Clear(Action):
         self.storage: Optional[MutableSequence[int]] = None
 
     def straight_action(self, storage: MutableSequence[int]) -> None:
-        self.storage = storage
+        self.storage = copy(storage)
         storage.clear()
 
     def reverse_action(self, storage: MutableSequence[int]) -> None:
-        storage = self.storage
+        storage += self.storage
 
 
 class AddToBegin(Action):
@@ -48,7 +49,7 @@ class RemoveFromBegin(Action):
         self.removed_elem = None
 
     def straight_action(self, storage: MutableSequence[int]) -> None:
-        self.removed_elem = storage.pop()
+        self.removed_elem = storage.pop(0)
 
     def reverse_action(self, storage: MutableSequence[Any]) -> None:
         storage.insert(0, self.removed_elem)
@@ -146,7 +147,7 @@ class PerformedCommandStorage:
 
     def cancel_actions(self) -> None:
         if len(self.action_log) > 0:
-            undo = self.action_log.pop()
-            undo.reverse_action(self.storage)
+            canceled = self.action_log.pop()
+            canceled.reverse_action(self.storage)
         else:
             raise AttributeError("Nothing to cancel")

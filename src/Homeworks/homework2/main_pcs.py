@@ -1,26 +1,21 @@
-from src.Homeworks.homework2.perfomans_command_storage import *
 from src.Homeworks.homework1.registry import Registry
+from src.Homeworks.homework2.perfomans_command_storage import *
 
-
-def info():
-    print(
-        "'''\n   (Firts word - command; i, j - indexes)\n"
-        "    elem\n"
-        "   Clear\n"
-        "   AddToEnd elem\n"
-        "   AddToBegin elem\n"
-        "   RemoveFromBegin\n"
-        "   RemoveFromEnd\n"
-        "   Replace i j\n "
-        "   Augment i value\n"
-        "   Insert i elem\n"
-        "   Remove i"
-        "   Reverse\n"
-        "   Input exit to exit\n"
-        "   Input get_storage to get storage\n"
-        "   Input cancel_last to cancel last action\n"
-        "'''\n"
-    )
+INFO = """\n(Firts word - command; i, j - indexes)\n
+    Clear
+    AddToEnd elem
+    AddToBegin elem
+    RemoveFromBegin
+    RemoveFromEnd
+    Replace i j
+    Augment i value
+    Insert i elem
+    Remove i
+    Reverse
+    Exit
+    Show
+    Cancel_last
+\n"""
 
 
 REGISTRY = Registry[Action]()
@@ -49,25 +44,34 @@ def create_perfomans_command_storage() -> PerformedCommandStorage:
     try:
         storage = eval(storage_type + "(map(int, storage_data.split()))")
     except ValueError:
-        print("INCORRECT STORAGE DATA (need to be int)")
-    except SyntaxError:
-        print("INCORRECT STORAGE TYPE")
+        raise Exception("INCORRECT STORAGE DATA (need to be int)")
+    except NameError:
+        raise Exception("INCORRECT STORAGE TYPE")
     else:
         return PerformedCommandStorage(storage)
 
 
-if __name__ == "__main__":
-    info()
+def main():
+    print(INFO)
     try:
         pc_storage = create_perfomans_command_storage()
     except Exception as e:
         print(e)
     else:
-        command = input("command")
-        while command != "exit":
+        command = input("command:\n")
+        while command != "Exit":
             try:
-                action = string_to_action(command)
-                pc_storage.do_actions(action)
+                if command == "Show":
+                    print("Storage:", pc_storage.storage)
+                elif command == "Cancel_last":
+                    pc_storage.cancel_actions()
+                else:
+                    action = string_to_action(command)
+                    pc_storage.do_actions(action)
             except Exception as e:
                 print(e)
-            command = input("command")
+            command = input("command:\n")
+
+
+if __name__ == "__main__":
+    main()
