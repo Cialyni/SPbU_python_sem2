@@ -1,4 +1,4 @@
-from src.Homeworks.homework2.perfomans_command_storage import *
+from src.Homeworks.homework2.perfomans_command_storage import Action, PerformedCommandStorage
 from src.Homeworks.registry import Registry
 
 INFO = """\n(First word - command; i, j - indexes)\n
