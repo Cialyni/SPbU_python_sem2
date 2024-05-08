@@ -40,7 +40,6 @@ def string_to_action(string: str) -> Action:
 
 def create_perfomans_command_storage() -> PerformedCommandStorage:
     storage_type = input("Input your storage type\n")
-    storage_data = input("Input storage data (only integers), like: 1 2 3 4 5\n")
     try:
         storage = eval(storage_type + "(map(int, storage_data.split()))")
     except ValueError:

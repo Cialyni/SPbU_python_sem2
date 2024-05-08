@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from src.Homeworks.homework2.main_pcs import *
+from src.Homeworks.homework2.pcs_main_part import *
 from src.Homeworks.homework2.perfomans_command_storage import *
 
 TEST_COLLECTION = [1, 2, 3, 4, 5]
