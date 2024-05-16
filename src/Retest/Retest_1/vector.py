@@ -33,7 +33,7 @@ class Vector(Generic[T]):
         return "Vector(" + ",".join([str(x) for x in self.coords]) + ")"
 
     def len(self) -> T:
-        return sum([x*x for x in self.coords]) ** 0.5
+        return sum([x * x for x in self.coords]) ** 0.5
 
     def vector_mul(self, other: "Vector") -> "Vector":
         if len(self.coords) != 3 or len(other.coords) != 3:
