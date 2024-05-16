@@ -92,6 +92,18 @@ class TestStudent:
     def test_find_attendance(self, student_name, course_name, expected):
         assert UNIVER.find_student_attendance(student_name, course_name) == expected
 
+    @pytest.mark.parametrize(
+        "student_name, expected",
+        (
+            ("aveaf", None),
+            ("Masha", ["Topology", "Algebra"]),
+            ("Anton", ["Algebra", "Topology", "Informatica"]),
+            ("Ilia", ["Math", "Topology", "Algebra", "Informatica"]),
+        ),
+    )
+    def test_find_student_courses(self, student_name, expected):
+        assert UNIVER.find_student_courses(student_name) == expected
+
 
 class TestTeacher:
     @pytest.mark.parametrize(

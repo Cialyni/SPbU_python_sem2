@@ -43,6 +43,9 @@ class Student:
                 return course.attendance
         raise ValueError("This student does not have such a subject")
 
+    def find_courses(self) -> List[str]:
+        return [course.course_name for course in self.courses]
+
 
 class University:
     def __init__(self, students: List[Student], teachers: List[Teacher]) -> None:
@@ -68,6 +71,11 @@ class University:
             print(error)
         else:
             print("This student does not exist")
+
+    def find_student_courses(self, student_name: str) -> Optional[List[str]]:
+        for student in self.students:
+            if student.name == student_name:
+                return student.find_courses()
 
     def find_teacher_workload(self, teacher_name: str) -> Optional[int]:
         for teacher in self.teachers:
