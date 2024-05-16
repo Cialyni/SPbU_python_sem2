@@ -22,7 +22,7 @@ class Teacher:
         self.name = name
         self.courses = courses
 
-    def find_courses(self):
+    def find_courses(self) -> List[str]:
         return [course.course_name for course in self.courses]
 
 
@@ -75,7 +75,7 @@ class University:
                 return len(teacher.courses)
         print("This teacher does not exist")
 
-    def find_teacher_courses(self, teacher_name: str) -> List[str]:
+    def find_teacher_courses(self, teacher_name: str) -> Optional[List[str]]:
         for teacher in self.teachers:
             if teacher.name == teacher_name:
                 return teacher.find_courses()
