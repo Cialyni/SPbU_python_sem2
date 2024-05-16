@@ -22,6 +22,9 @@ class Teacher:
         self.name = name
         self.courses = courses
 
+    def find_courses(self):
+        return [course.course_name for course in self.courses]
+
 
 class Student:
     def __init__(self, name: str, courses: List[StudentCourses]) -> None:
@@ -73,12 +76,9 @@ class University:
         print("This teacher does not exist")
 
     def find_teacher_courses(self, teacher_name: str) -> List[str]:
-        courses = []
         for teacher in self.teachers:
             if teacher.name == teacher_name:
-                for course in teacher.courses:
-                    courses.append(course.course_name)
-        return courses
+                return teacher.find_courses()
 
     def add_student(self, student_name: str) -> None:
         student = Student(student_name, [])

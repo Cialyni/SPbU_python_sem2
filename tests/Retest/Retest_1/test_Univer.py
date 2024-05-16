@@ -100,7 +100,7 @@ class TestTeacher:
             ("Genadi Sergeevich", ["Math", "Topology"]),
             ("Maksim Alexeevitch", ["Algebra", "Informatica"]),
             ("Ivan Ivanovitch", ["Topology"]),
-            ("adfasf", []),
+            ("adfasf", None),
         ),
     )
     def test_find_teacher_courses(self, teacher_name, expected):
