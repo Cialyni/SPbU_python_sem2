@@ -19,7 +19,9 @@ class Node(Generic[K, V]):
     def __lt__(self, other: "Node") -> bool:
         return (self.priority, self.key) < (other.priority, other.key)
 
-    def __eq__(self, other: "Node") -> bool:
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Node):
+            return False
         return self.priority == other.priority and self.key == other.key
 
 
@@ -27,7 +29,7 @@ class Treap(MutableMapping, Generic[K, V]):
     def __init__(self, node_init: List[Any] = []) -> None:
         try:
             node = Node[K, V](*node_init)
-        except:
+        except AttributeError:
             raise AttributeError("Class Node has: priority, key, value, left, right child")
         else:
             self.root: Optional[Node] = node
@@ -63,10 +65,10 @@ class Treap(MutableMapping, Generic[K, V]):
             raise KeyError("Treap hasn't key", key)
         return needed.value
 
-    def __contains__(self, key: K) -> bool:
+    def __contains__(self, key: object) -> bool:
         return self.get_node(key) is not None
 
-    def get_node(self, key: K) -> Optional[Node]:
+    def get_node(self, key: object) -> Optional[Node]:
         curr_node = self.root
         while curr_node is not None:
             if curr_node.key == key:
