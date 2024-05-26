@@ -5,8 +5,33 @@ K = TypeVar("K")
 V = TypeVar("V")
 
 
-class PrinterMixin:
-    root: "Optional[Node]"  # to avoid mypy error: [attr-defined]
+class Node(Generic[K, V]):
+    def __init__(self, key: K, value: V) -> None:
+        self.priority: int = randint(0, int(1e9))
+        self.key: K = key
+        self.value: V = value
+        self.left: Optional[Node] = None
+        self.right: Optional[Node] = None
+
+    def __str__(self) -> str:
+        return f"priority={self.priority}, key={self.key}, value={self.value}"
+
+    def __lt__(self, other: "Node") -> bool:
+        return (self.priority, self.key) < (other.priority, other.key)
+
+    def __eq__(self, other: "Node") -> bool:
+        return self.priority == other.priority and self.key == other.key
+
+
+class Treap(MutableMapping, Generic[K, V]):
+    def __init__(self, node_init: List[Any] = []) -> None:
+        try:
+            node = Node[K, V](*node_init)
+        except:
+            raise AttributeError("Class Node has: priority, key, value, left, right child")
+        else:
+            self.root: Optional[Node] = node
+            self.len = 1 if node else 0
 
     def __str__(self) -> str:
         def _get_lines(node: Optional[Node], string: str, level: int = 0) -> str:
@@ -32,42 +57,13 @@ class PrinterMixin:
 
         return _get_nodes(self.root)
 
-
-class Node(Generic[K, V]):
-    def __init__(self, key: K, value: V) -> None:
-        self.priority: int = randint(0, int(1e9))
-        self.key: K = key
-        self.value: V = value
-        self.left: Optional[Node] = None
-        self.right: Optional[Node] = None
-
-    def __str__(self) -> str:
-        return f"priority={self.priority}, key={self.key}, value={self.value}"
-
-    def __lt__(self, other: "Node") -> bool:
-        if self.priority > other.priority:
-            return False
-        elif self.priority < other.priority:
-            return True
-        else:
-            return self.key < other.key
-
-    def __eq__(self, other: "Node") -> bool:  # type: ignore[override]
-        return self.priority == other.priority and self.key == other.key
-
-
-class Treap(MutableMapping, PrinterMixin, Generic[K, V]):
-    def __init__(self, node: Optional[Node] = None) -> None:
-        self.root: Optional[Node] = node
-        self.len = 1 if node else 0
-
     def __getitem__(self, key: K) -> V:
         needed = self.get_node(key)
         if needed is None or needed.key != key:
-            raise KeyError
+            raise KeyError("Treap hasn't key", key)
         return needed.value
 
-    def __contains__(self, key: K) -> bool:  # type: ignore[override]
+    def __contains__(self, key: K) -> bool:
         return self.get_node(key) is not None
 
     def get_node(self, key: K) -> Optional[Node]:
