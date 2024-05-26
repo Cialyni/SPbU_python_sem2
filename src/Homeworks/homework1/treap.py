@@ -27,13 +27,11 @@ class Node(Generic[K, V]):
 
 class Treap(MutableMapping, Generic[K, V]):
     def __init__(self, node_init: List[Any] = []) -> None:
-        try:
-            node = Node[K, V](*node_init)
-        except AttributeError:
-            raise AttributeError("Class Node has: priority, key, value, left, right child")
-        else:
-            self.root: Optional[Node] = node
-            self.len = 1 if node else 0
+        root_node: Optional[Node] = None
+        if len(node_init):
+            root_node = Node[K, V](*node_init)
+        self.root: Optional[Node] = root_node
+        self.len = 1 if root_node else 0
 
     def __str__(self) -> str:
         def _get_lines(node: Optional[Node], string: str, level: int = 0) -> str:

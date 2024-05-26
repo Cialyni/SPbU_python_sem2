@@ -56,7 +56,7 @@ class TestTreap:
             d = self.build_random_tree()
             split_key = random.randint(-int(1e6), int(1e6))
             rt1, rt2 = Treap.split(split_key, copy.deepcopy(d).root)
-            d1, d2 = Treap(rt1), Treap(rt2)
+            d1, d2 = Treap([rt1.key, rt1.value]), Treap([rt2.key, rt2.value])
             assert self.check_tree_invariant(d1) and self.check_tree_invariant(d2)
             keys_invariant_flag = True
             nodes_d1, nodes_d2 = d1.traverse(), d2.traverse()
