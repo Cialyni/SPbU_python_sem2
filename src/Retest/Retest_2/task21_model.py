@@ -1,11 +1,12 @@
 import argparse
 import time
-from tkinter import DISABLED
+from tkinter import DISABLED, Button, Tk
+from typing import Dict, List
 
-from src.Retest.Retest_2.task2_1_view import MainWindom, WinWindow
+from src.Retest.Retest_2.task21_view import MainWindom, WinWindow
 
 
-def args_pars():
+def args_pars() -> int:
     parser = argparse.ArgumentParser(description="Hitler game parameters")
     parser.add_argument(
         "N",
@@ -21,22 +22,22 @@ def args_pars():
 class App:
     def __init__(self, n: int):
         self.size = n
-        self.buttons = dict()
+        self.buttons: Dict[int, Button] = dict()
         self.count_of_unenable_button = 0
-        self.active_button = []
-        self.window = MainWindom(n, self.buttons, self.button_event_handler)
+        self.active_button: List[List] = []
+        self.window: MainWindom = MainWindom(n, self.buttons, self.button_event_handler)
 
-    def run(self):
+    def run(self) -> None:
         while self.count_of_unenable_button != self.size**2:
-            self.window.update()
+            self.window.root.update()
         self.close()
 
-    def close(self):
-        self.window = WinWindow()
-        self.window.update()
+    def close(self) -> None:
+        self.closewindow = WinWindow()
+        self.closewindow.root.update()
         time.sleep(1.5)
 
-    def button_event_handler(self, button_num, btn, ind):
+    def button_event_handler(self, button_num: int, btn: Button, ind: int) -> None:
         btn.configure(text=str(button_num))
         if len(self.active_button) != 0:
             if self.active_button[0][0] == button_num:

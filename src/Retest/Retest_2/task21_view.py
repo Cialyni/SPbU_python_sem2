@@ -1,15 +1,17 @@
 from random import choice
 from tkinter import *
-from typing import List
+from typing import Callable, List
+
+from mypyc.irbuild import function
 
 
-class MainWindom(Tk):
-    def __init__(self, n: int, buttons, f):
-        super().__init__()
-        self.n = n
+class MainWindom:
+    def __init__(self, n: int, buttons: dict, f: function) -> None:
+        self.root = Tk()
+        self.n: int = n
         self.build_window(buttons, f)
 
-    def build_window(self, buttons, f):
+    def build_window(self, buttons: dict, f: function) -> None:
         defined_nums: List[int] = []
         buttons_values = dict()
         for i in range(self.n):
@@ -20,19 +22,18 @@ class MainWindom(Tk):
                     [i for i in range(0, self.n * self.n // 2) if defined_nums.count(i) < 2]
                 )
                 defined_nums.append(buttons_values[i * self.n + j])
-                buttons[i * self.n + j] = Button(
-                    Frm, text=" ", command=lambda a=i * self.n + j: f(buttons_values[a], buttons[a], a)
-                )
+                foo: Callable = lambda a=i * self.n + j: f(buttons_values[a], buttons[a], a)
+                buttons[i * self.n + j] = Button(Frm, text=" ", command=foo)
                 buttons[i * self.n + j].pack(side=LEFT, expand=YES, fill=BOTH)
 
 
-class WinWindow(Tk):
-    def __init__(self):
-        super().__init__()
+class WinWindow:
+    def __init__(self) -> None:
+        self.root = Tk()
         self.build_win_window()
 
-    def build_win_window(self):
-        self.geometry("250x200")
-        self.title("WINWINWIN")
-        label = Label(self, text="WIN")
+    def build_win_window(self) -> None:
+        self.root.geometry("250x200")
+        self.root.title("WINWINWIN")
+        label = Label(self.root, text="WIN")
         label.pack(anchor=CENTER, expand=1)
