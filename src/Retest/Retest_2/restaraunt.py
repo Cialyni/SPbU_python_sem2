@@ -49,7 +49,7 @@ class Waiter:
         self.tables: Dict[int, Table] = {}
         self.restaurant_cash = 0
 
-    def take_order(self, table_id: int, menu: Dict[str, List[ColdDish | HotDish]]) ->  List[ColdDish | HotDish]:
+    def take_order(self, table_id: int, menu: Dict[str, List[ColdDish | HotDish]]) -> List[ColdDish | HotDish]:
         order = self.tables[table_id].do_order(menu)
         self.tables[table_id].cooked_dishes = order
         return order
@@ -121,8 +121,8 @@ class Restaurant:
         self.kitchen = Kitchen(f"Kitchen of {self.name}")
 
     def add_dish(self, name: str, price: int, cooking_time: int, dish_type: str) -> None:
-        if dish_type == 'cold_dish':
-            dish: ColdDish|HotDish = ColdDish(name, price, cooking_time, dish_type)
+        if dish_type == "cold_dish":
+            dish: ColdDish | HotDish = ColdDish(name, price, cooking_time, dish_type)
         else:
             dish = HotDish(name, price, cooking_time, dish_type)
         if dish in self.menu[dish.dish_type]:
