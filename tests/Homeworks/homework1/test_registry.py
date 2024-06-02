@@ -3,7 +3,7 @@ from typing import Mapping
 
 import pytest
 
-from src.Homeworks.registry import Registry
+from src.Homeworks.homework1.registry import Registry
 
 MAPPING_REGISTRY = Registry[Mapping](default=Mapping)
 MAPPING_REGISTRY_WITHOUT_DEFAULT = Registry[Mapping]()
