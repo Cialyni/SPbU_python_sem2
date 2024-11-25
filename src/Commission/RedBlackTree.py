@@ -1,7 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union, TypeVar, Tuple
-
+from typing import Any, List, Optional, Tuple, TypeVar, Union
 
 
 @dataclass
@@ -15,7 +14,7 @@ class Node:
 
 
 @dataclass
-class NulNode(Node):
+class NullNode(Node):
     key = None
     value = None
     parent = None
@@ -24,9 +23,7 @@ class NulNode(Node):
     color: str = "black"
 
 
-NULL = NulNode()
-
-
+NULL = NullNode()
 
 
 class RBTree:
@@ -180,7 +177,7 @@ class RBTree:
                         deleting_node = self.root
             deleting_node.color = "black"
 
-        def _remove(current_root: Node, key: int, removing_node: Node=NULL) -> Tuple[Node, Node]:
+        def _remove(current_root: Node, key: int, removing_node: Node = NULL) -> Tuple[Node, Node]:
             if current_root.key > key:
                 current_root.left, removing_node = _remove(current_root.left, key)
             elif current_root.key < key:
