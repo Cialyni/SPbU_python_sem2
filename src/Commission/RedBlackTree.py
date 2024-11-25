@@ -1,29 +1,37 @@
 import random
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union, TypeVar, Tuple
 
-
-@dataclass
-class NulNode:
-    color: str = "black"
-
-
-NULL = NulNode()
 
 
 @dataclass
 class Node:
     key: int
     value: Any
+    parent: "Node"
+    left: "Node"
+    right: "Node"
     color: str = "red"
-    parent: "Node" = None
-    left: "Node" = NULL
-    right: "Node" = NULL
+
+
+@dataclass
+class NulNode(Node):
+    key = None
+    value = None
+    parent = None
+    left = None
+    right = None
+    color: str = "black"
+
+
+NULL = NulNode()
+
+
 
 
 class RBTree:
     def __init__(self) -> None:
-        self.root: Node = None
+        self.root: Node = NULL
 
     def __del__(self) -> None:
         def _delete_by_rec(root: Node) -> None:
@@ -52,7 +60,7 @@ class RBTree:
 
     def __getitem__(self, key: int) -> Any:
         needed = self.get_node(key)
-        if needed == NULL or needed.key != key:
+        if needed == NULL:
             raise KeyError("RBTree hasn't key", key)
         return needed.value
 
@@ -62,8 +70,8 @@ class RBTree:
             yield node
 
     def __setitem__(self, key: int, value: Any) -> None:
-        if self.root == None:
-            self.root = Node(key, value, "black")
+        if self.root == NULL:
+            self.root = Node(key, value, NULL, NULL, NULL, "black")
             return
 
         def _insert_fix_balance(new_node: Node) -> None:
@@ -97,10 +105,10 @@ class RBTree:
             self.root.color = "black"
 
         def _insert(key: int, value: Any) -> None:
-            new_node = Node(key, value)
+            new_node = Node(key, value, NULL, NULL, NULL)
             cur_node = self.root
-            previous_node = None
-            while cur_node is not NULL:
+            previous_node: Node
+            while cur_node != NULL:
                 previous_node = cur_node
                 if cur_node.key == key:
                     cur_node.value = value
@@ -116,7 +124,7 @@ class RBTree:
 
         _insert(key, value)
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: int) -> None:
         if self[key] is None:
             raise KeyError("RBTree hasn't Node with this key")
 
@@ -172,7 +180,7 @@ class RBTree:
                         deleting_node = self.root
             deleting_node.color = "black"
 
-        def _remove(current_root: Node, key: Any, removing_node=None) -> (Node, Node):
+        def _remove(current_root: Node, key: int, removing_node: Node=NULL) -> Tuple[Node, Node]:
             if current_root.key > key:
                 current_root.left, removing_node = _remove(current_root.left, key)
             elif current_root.key < key:
@@ -230,7 +238,7 @@ class RBTree:
             current_root = current_root.left
         return current_root
 
-    def get_node(self, key: int) -> Node | NulNode:
+    def get_node(self, key: int) -> Node:
         curr_node: Node = self.root
         while curr_node != NULL:
             if curr_node.key == key:
@@ -247,7 +255,7 @@ class RBTree:
         if y.left != NULL:
             y.left.parent = x
         y.parent = x.parent
-        if x.parent is None:
+        if x.parent == NULL:
             self.root = y
         else:
             if x == x.parent.left:
@@ -263,7 +271,7 @@ class RBTree:
         if y.right != NULL:
             y.right.parent = x
         y.parent = x.parent
-        if x.parent is None:
+        if x.parent == NULL:
             self.root = y
         else:
             if x == x.parent.right:
@@ -272,3 +280,10 @@ class RBTree:
                 x.parent.left = y
         y.right = x
         x.parent = y
+
+
+a = RBTree()
+a[1] = 1
+a[2] = 2
+a[3] = 3
+print(a)

@@ -3,7 +3,7 @@ import random
 
 import pytest
 
-from src.Commission.Red_Black_Tree import NULL, Node, RBTree
+from src.Commission.RedBlackTree import NULL, Node, RBTree
 
 
 class TestRBTree:
