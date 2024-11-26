@@ -1,10 +1,9 @@
 import argparse
 from typing import Tuple
 
-from loguru import logger
-
 from HitlerFinder import multiprocess_search
-from PagesFinder import PageNode, get_random_page, get_path_to_page
+from loguru import logger
+from PagesFinder import PageNode, get_path_to_page, get_random_page
 
 
 def args_pars() -> Tuple[int, int, PageNode]:
@@ -31,7 +30,7 @@ def args_pars() -> Tuple[int, int, PageNode]:
     return args.depth, args.processed_numbers, PageNode(args.url)
 
 
-def search_game(depth: int, processed_nums: int, start_page: PageNode):
+def search_game(depth: int, processed_nums: int, start_page: PageNode) -> str:
     if start_page.url == "Adolf_Hitler":
         return "Already on Hitlers page"
     result = multiprocess_search(depth, processed_nums, start_page)

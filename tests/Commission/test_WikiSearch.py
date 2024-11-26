@@ -1,11 +1,12 @@
 import pytest
 
-from src.Commission.WikiSearch.PagesFinder import get_random_page, PageNode
+from src.Commission.WikiSearch.PagesFinder import PageNode, get_random_page
 
 
 def test_get_random_page():
     page = get_random_page()
     assert isinstance(page, PageNode) and page.url is not None
+
 
 @pytest.mark.parametrize(
     "page, path",
