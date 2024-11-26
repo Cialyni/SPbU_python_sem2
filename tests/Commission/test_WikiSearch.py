@@ -1,6 +1,6 @@
 import pytest
 
-from src.Commission.WikiSearch.PagesFinder import PageNode, get_random_page
+from src.Commission.WikiSearch.PagesFinder import PageNode, get_path_to_page, get_random_page
 
 
 def test_get_random_page():
@@ -17,4 +17,4 @@ def test_get_random_page():
     ),
 )
 def test_get_path_to_page(page, path):
-    assert page == path
+    assert get_path_to_page(page) == path
