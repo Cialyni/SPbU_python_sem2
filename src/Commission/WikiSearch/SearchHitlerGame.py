@@ -3,7 +3,7 @@ from typing import Tuple
 
 from loguru import logger
 
-from HitlerFinder import multiprocess_bfs
+from HitlerFinder import multiprocess_search
 from PagesFinder import PageNode, get_random_page, get_path_to_page
 
 
@@ -34,7 +34,7 @@ def args_pars() -> Tuple[int, int, PageNode]:
 def search_game(depth: int, processed_nums: int, start_page: PageNode):
     if start_page.url == "Adolf_Hitler":
         return "Already on Hitlers page"
-    result = multiprocess_bfs(depth, processed_nums, start_page)
+    result = multiprocess_search(depth, processed_nums, start_page)
     if result:
         path = get_path_to_page(result)
         message = "".join([elem + " --> " if i != len(path) - 1 else elem for i, elem in enumerate(path)])

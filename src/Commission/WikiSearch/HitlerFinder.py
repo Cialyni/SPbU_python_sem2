@@ -8,7 +8,7 @@ from PagesFinder import PageNode, get_all_pages
 needed_to_find = "Adolf_Hitler"
 
 
-def multiprocess_bfs( depth: int, processed_nums: int, start_page: PageNode,) -> Optional[PageNode]:
+def multiprocess_search( depth: int, processed_nums: int, start_page: PageNode,) -> Optional[PageNode]:
 
     with ProcessPoolExecutor(max_workers=processed_nums) as executor:
         cur_wave: set[PageNode] = set()
