@@ -128,7 +128,7 @@ class RBTree:
         def _deleting_fix(deleting_node: Node) -> None:
             if deleting_node is None:
                 return
-            while deleting_node != self.root and deleting_node.color == "black":
+            while deleting_node != NULL and deleting_node != self.root and deleting_node.color == "black":
                 if deleting_node == deleting_node.parent.left:
                     sibling = deleting_node.parent.right
                     if sibling.color == "red":
