@@ -5,11 +5,11 @@ from typing import Any, List, Optional, Tuple, TypeVar, Union
 
 @dataclass
 class Node:
-    key: int
+    key: Any
     value: Any
-    parent: "Node"
-    left: "Node"
-    right: "Node"
+    parent: Any
+    left: Any
+    right: Any
     color: str = "red"
 
 
@@ -23,7 +23,7 @@ class NullNode(Node):
     color: str = "black"
 
 
-NULL = NullNode()
+NULL = NullNode(None, None, None, None, "black")
 
 
 class RBTree:
