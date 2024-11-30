@@ -1,10 +1,6 @@
 from abc import ABC
-from collections.abc import Callable
-from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, List, Tuple
-
-from pygments.lexer import default
 
 
 @dataclass
