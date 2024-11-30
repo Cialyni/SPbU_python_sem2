@@ -3,6 +3,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, List, Tuple
 
+from pygments.lexer import default
+
 
 @dataclass
 class ANode(ABC):
@@ -31,9 +33,9 @@ NULL = NullNode(None, None, "black", None, None, None)
 class Node(ANode):
     key: int
     color: str = "red"
-    parent: ANode = deepcopy(NULL)
-    left: ANode = deepcopy(NULL)
-    right: ANode = deepcopy(NULL)
+    parent: ANode = field(default_factory=NullNode)
+    left: ANode = field(default_factory=NullNode)
+    right: ANode = field(default_factory=NullNode)
 
 
 class RBTree:
@@ -77,7 +79,7 @@ class RBTree:
 
     def __setitem__(self, key: int, value: Any) -> None:
         if self.root == NULL:
-            self.root = Node(key, value, "black")
+            self.root = Node(key, value, "black", NULL, NULL, NULL)
             return
         tmp = self.get_node(key)
         if tmp is not NULL:
@@ -127,7 +129,7 @@ class RBTree:
         self.root.color = "black"
 
     def _insert(self, key: int, value: Any) -> None:
-        new_node = Node(key, value, "red")
+        new_node = Node(key, value, "red", NULL, NULL, NULL)
         cur_node = self.root
         previous_node = cur_node
         while cur_node != NULL:
