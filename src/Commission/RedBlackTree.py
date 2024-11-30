@@ -1,4 +1,5 @@
 from abc import ABC
+from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, List, Tuple
@@ -33,9 +34,9 @@ NULL = NullNode(None, None, "black", None, None, None)
 class Node(ANode):
     key: int
     color: str = "red"
-    parent: ANode = field(default_factory=NullNode)
-    left: ANode = field(default_factory=NullNode)
-    right: ANode = field(default_factory=NullNode)
+    parent: ANode = field(default_factory=lambda: NullNode(None, None, "black", None, None, None))
+    left: ANode = field(default_factory=lambda: NullNode(None, None, "black", None, None, None))
+    right: ANode = field(default_factory=lambda: NullNode(None, None, "black", None, None, None))
 
 
 class RBTree:
