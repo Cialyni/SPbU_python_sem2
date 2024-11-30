@@ -2,9 +2,7 @@ import random
 
 import pytest
 
-from src.Commission.RedBlackTree import Node, NullNode, RBTree
-
-NULL = NullNode(color="black")
+from src.Commission.RedBlackTree import NULL, Node, RBTree
 
 
 class TestRBTree:

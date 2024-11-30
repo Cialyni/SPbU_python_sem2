@@ -1,5 +1,6 @@
 from abc import ABC
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, field
 from typing import Any, List, Tuple
 
 
@@ -29,11 +30,10 @@ NULL = NullNode(None, None, "black", None, None, None)
 @dataclass
 class Node(ANode):
     key: int
-    value: Any
     color: str = "red"
-    parent: ANode = NULL
-    left: ANode = NULL
-    right: ANode = NULL
+    parent: ANode = deepcopy(NULL)
+    left: ANode = deepcopy(NULL)
+    right: ANode = deepcopy(NULL)
 
 
 class RBTree:
