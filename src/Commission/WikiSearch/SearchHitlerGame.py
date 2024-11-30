@@ -31,6 +31,7 @@ def args_pars() -> Tuple[int, int, PageNode]:
 
 
 def search_game(depth: int, processed_nums: int, start_page: PageNode) -> str:
+    logger.info(f"Searching for Hitler from {start_page.url}")
     if start_page.url == "Adolf_Hitler":
         return "Already on Hitlers page"
     result = multiprocess_search(depth, processed_nums, start_page)

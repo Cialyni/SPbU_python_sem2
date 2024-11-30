@@ -17,7 +17,7 @@ class PageNode:
         return hash(self.url)
 
 
-def get_all_pages(current_page: PageNode, visited: set[PageNode] = set()) -> set[PageNode]:
+def get_all_pages(current_page: PageNode) -> set[PageNode]:
     sub_pages: set[PageNode] = set()
     reqs = requests.get(WIKI_PREF + current_page.url)
     if reqs.status_code != 200:
@@ -27,7 +27,7 @@ def get_all_pages(current_page: PageNode, visited: set[PageNode] = set()) -> set
         wiki_suff = link.get("href")
         if wiki_suff and wiki_suff[0:6] == "/wiki/":
             sub_pages.add(PageNode(wiki_suff[6:], current_page))
-    return sub_pages - visited
+    return sub_pages
 
 
 def get_path_to_page(node: PageNode) -> list[str]:
@@ -35,7 +35,11 @@ def get_path_to_page(node: PageNode) -> list[str]:
 
 
 def get_random_page() -> PageNode:
-    main_page = PageNode("Main_Page")
-    pages = get_all_pages(main_page)
-    page = random.choice(list(pages))
-    return page
+    reqs = requests.get(WIKI_PREF + "Special:Random")
+    soup = BeautifulSoup(reqs.content, "html.parser")
+    suff = " - Wikipedia"
+    title = soup.title
+    if title is not None:
+        random_url = title.text[: -len(suff)]
+        return PageNode(random_url)
+    return PageNode("Main_Page")
