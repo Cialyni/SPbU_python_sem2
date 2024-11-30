@@ -1,32 +1,47 @@
-import random
+from abc import ABC
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Tuple
 
 
 @dataclass
-class NullNode:
-    color: str = "black"
-
-
-NULL = NullNode()
+class ANode(ABC):
+    key: Any
+    value: Any
+    color: str
+    parent: Any
+    left: Any
+    right: Any
 
 
 @dataclass
-class Node:
+class NullNode(ANode):
+    key = None
+    value = None
+    color = "black"
+    parent = None
+    left = None
+    right = None
+
+
+NULL = NullNode(None, None, "black", None, None, None)
+
+
+@dataclass
+class Node(ANode):
     key: int
     value: Any
     color: str = "red"
-    parent: Union["Node", NullNode] = NULL
-    left: Union["Node", NullNode] = NULL
-    right: Union["Node", NullNode] = NULL
+    parent: ANode = NULL
+    left: ANode = NULL
+    right: ANode = NULL
 
 
 class RBTree:
     def __init__(self) -> None:
-        self.root: Union[Node, NullNode] = NULL
+        self.root: ANode = NULL
 
     def __del__(self) -> None:
-        def _delete_by_rec(root: Union[Node, NullNode]) -> None:
+        def _delete_by_rec(root: ANode) -> None:
             if root != NULL:
                 _delete_by_rec(root.left)
                 _delete_by_rec(root.right)
@@ -35,7 +50,7 @@ class RBTree:
         _delete_by_rec(self.root)
 
     def __str__(self) -> str:
-        def _get_lines(node: Union[Node, NullNode], string: str, level: int = 0) -> str:
+        def _get_lines(node: ANode, string: str, level: int = 0) -> str:
             if node != NULL:
                 string = _get_lines(node.right, string, level + 1)
                 indent_by_depth = " " * 4 * level
@@ -64,20 +79,20 @@ class RBTree:
         if self.root == NULL:
             self.root = Node(key, value, "black")
             return
-
-        if key in self:
-            self.get_node(key).value = value
+        tmp = self.get_node(key)
+        if tmp is not NULL:
+            tmp.value = value
             return
-
         self._insert(key, value)
 
     def __delitem__(self, key: int) -> None:
-        if key not in self:
+        if self[key] is None:
             raise KeyError("RBTree hasn't Node with this key")
+
         self.root, removed_node = self._remove(self.root, key)
         self._deleting_fix(removed_node)
 
-    def _insert_fix_balance(self, new_node: Union[NullNode, Node]) -> None:
+    def _insert_fix_balance(self, new_node: ANode) -> None:
         while new_node != self.root and new_node.parent.color == "red":
             # если отец ноды - левый ребенок
             if new_node.parent == new_node.parent.parent.left:
@@ -112,9 +127,9 @@ class RBTree:
         self.root.color = "black"
 
     def _insert(self, key: int, value: Any) -> None:
-        new_node = Node(key, value)
+        new_node = Node(key, value, "red")
         cur_node = self.root
-        previous_node: Node
+        previous_node = cur_node
         while cur_node != NULL:
             previous_node = cur_node
             if cur_node.key == key:
@@ -123,17 +138,17 @@ class RBTree:
             cur_node = cur_node.left if cur_node.key > key else cur_node.right
 
         new_node.parent = previous_node
-        if previous_node.key < new_node.key:
+        if previous_node != NULL and previous_node.key < new_node.key:
             previous_node.right = new_node
         else:
             previous_node.left = new_node
         self._insert_fix_balance(new_node)
 
-    def _deleting_fix(self, deleting_node: Union[NullNode, Node]) -> None:
+    def _deleting_fix(self, deleting_node: ANode) -> None:
         if deleting_node is None:
             return
         while deleting_node != NULL and deleting_node != self.root and deleting_node.color == "black":
-            # удаляемая нода - левый ребенок
+            # if удаляемая нода - левый ребенок
             if deleting_node == deleting_node.parent.left:
                 sibling = deleting_node.parent.right
                 # брат ноды красный
@@ -147,21 +162,21 @@ class RBTree:
                     sibling.color = "red"
                     deleting_node = deleting_node.parent
                 else:
-                    # брат ноды черный с красным левым ребенком
+                    # брат ноды черный с черным правым ребенком
                     if sibling.right.color == "black":
                         sibling.left.color = "black"
                         sibling.color = "red"
                         self._rotate_right(sibling)
                         sibling = deleting_node.parent.right
 
-                    # брат ноды черный с черным правым ребенком
+                    # брат ноды черный с черным левым ребенком
                     sibling.color = deleting_node.parent.color
                     deleting_node.parent.color = "black"
                     sibling.right.color = "black"
                     self._rotate_left(deleting_node.parent)
                     deleting_node = self.root
-            # удаляемая нода - правый ребенок. Аналогично
             else:
+                # удаляемая нода - правый ребенок. Аналогично
                 sibling = deleting_node.parent.left
                 if sibling.color == "red":
                     sibling.color = "black"
@@ -186,9 +201,7 @@ class RBTree:
                     deleting_node = self.root
         deleting_node.color = "black"
 
-    def _remove(
-        self, current_root: Union[NullNode, Node], key: int, removing_node: Union[NullNode, Node] = NULL
-    ) -> Tuple[Node, Node]:
+    def _remove(self, current_root: ANode, key: int, removing_node: ANode = NULL) -> Tuple[ANode, ANode]:
         if current_root.key > key:
             current_root.left, removing_node = self._remove(current_root.left, key)
         elif current_root.key < key:
@@ -205,22 +218,22 @@ class RBTree:
 
         return current_root, removing_node
 
-    def traverse(self, order: str = "pre_order") -> List[Node]:
-        nodes: List[Node] = []
+    def traverse(self, order: str = "pre_order") -> List[ANode]:
+        nodes: List[ANode] = []
 
-        def pre_order_traverse(node: Union[NullNode, Node]) -> None:
+        def pre_order_traverse(node: ANode) -> None:
             if node != NULL:
                 nodes.append(node)
                 pre_order_traverse(node.left)
                 pre_order_traverse(node.right)
 
-        def post_order_traverse(node: Union[NullNode, Node]) -> None:
+        def post_order_traverse(node: ANode) -> None:
             if node != NULL:
                 post_order_traverse(node.left)
                 post_order_traverse(node.right)
                 nodes.append(node)
 
-        def in_order_traverse(node: Union[NullNode, Node]) -> None:
+        def in_order_traverse(node: ANode) -> None:
             if node != NULL:
                 in_order_traverse(node.left)
                 nodes.append(node)
@@ -235,7 +248,7 @@ class RBTree:
         return nodes
 
     @staticmethod
-    def find_min_in_right_subtree(root: Union[NullNode, Node]) -> Node:
+    def find_min_in_right_subtree(root: ANode) -> ANode:
         current_root = root.right
         if current_root == NULL:
             return root
@@ -243,8 +256,8 @@ class RBTree:
             current_root = current_root.left
         return current_root
 
-    def get_node(self, key: int) -> Union[NullNode, Node]:
-        curr_node: Union[NullNode, Node] = self.root
+    def get_node(self, key: int) -> ANode:
+        curr_node: ANode = self.root
         while curr_node != NULL:
             if curr_node.key == key:
                 return curr_node
@@ -254,7 +267,7 @@ class RBTree:
                 curr_node = curr_node.right
         return NULL
 
-    def _rotate_left(self, x: Node) -> None:
+    def _rotate_left(self, x: ANode) -> None:
         y = x.right
         x.right = y.left
         if y.left != NULL:
@@ -270,7 +283,7 @@ class RBTree:
         y.left = x
         x.parent = y
 
-    def _rotate_right(self, x: Node) -> None:
+    def _rotate_right(self, x: ANode) -> None:
         y = x.left
         x.left = y.right
         if y.right != NULL:
