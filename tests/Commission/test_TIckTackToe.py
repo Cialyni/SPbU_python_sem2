@@ -11,7 +11,6 @@ class TestPlayer:
     pl1 = Human("A", choice("XO"))
     pl2 = EasyBot("B", choice("XO"))
     pl3 = HardBot("C", choice("XO"))
-    MODEL.clear()
 
     def test_move_human(self):
         move = TestPlayer.pl1.move(MODEL.available_fields, MODEL.board, choice(MODEL.available_fields))
@@ -39,6 +38,8 @@ class TestModel:
         ),
     )
     def test_make_move(self, player, field_pos):
+        if player.name == "A":
+            MODEL.clear()
         move = MODEL.make_move(player, field_pos)
         assert move not in MODEL.available_fields
         assert MODEL.board[move] == player.side
